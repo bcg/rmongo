@@ -40,7 +40,6 @@ module Mongo
         :query => query,
         :orderby => order.inject({}){ |h,a| h.update(a[:orderby]); h }
       } if order.any?
-      
       @client.send 2004, :int,     reserved = 0,
                          :cstring, @ns,
                          :int,     opts[:skip],
@@ -63,7 +62,7 @@ module Mongo
       obj[:_id] ||= if defined? SecureRandom
                       SecureRandom.hex(12)
                     else
-                      UUID.new(:compact).gsub(/^(.{20})(.{8})(.{4})$/){ $1+$3 }
+                      UUID.new.generate(:compact).gsub(/^(.{20})(.{8})(.{4})$/){ $1+$3 }
                     end if add_id
 
       @client.send 2002, :int,     reserved = 0,

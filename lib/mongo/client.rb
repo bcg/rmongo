@@ -31,7 +31,7 @@ module Mongo
     end
 
     def receive_data data
-      # log 'receive_data', data
+      log 'receive_data', data
       @buf << data
 
       until @buf.empty?
@@ -61,10 +61,10 @@ module Mongo
       end
     end
 
-    # def send_data data
-    #   # log 'send_data', data
-    #   super
-    # end
+    def send_data data
+      log 'send_data', data
+      super data
+    end
 
     def unbind
       log 'disconnected'
@@ -86,7 +86,7 @@ module Mongo
     def send command_id, *args, &blk
       id = @id+=1
 
-      # EM.next_tick do
+      #EM.next_tick do
         callback{
           buf = Buffer.new
           buf.write :int, id,
@@ -94,11 +94,10 @@ module Mongo
                     :int, operation = command_id
 
           buf.write *args
-
           send_data [ buf.size + 4 ].pack('i')
           send_data buf.data
         }
-      # end
+      #end
       
       @responses[id] = blk if blk
       
